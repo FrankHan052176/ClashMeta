@@ -5,6 +5,7 @@ import { promptAction } from '@kit.ArkUI'
 import { Selection, SelectionRepo } from './SelectionRepo'
 import { fileUri } from '@kit.CoreFileKit'
 import SocketProxyService from '../rpc/SocketProxyService'
+import { url } from '@kit.ArkTS'
 
 export interface FetchStatus{
   action:string
@@ -90,6 +91,11 @@ export class ProfileViewModel{
     }else{
       profile.type = ProfileType.File
       await fs.copy(profile.source, fileUri.getUriFromPath(configPath +  "/config.yaml"))
+      if(profile.name == "新配置"){
+        const name =  profile.source.substring(profile.source.lastIndexOf('/') + 1)
+
+        profile.name = decodeURIComponent(name)
+      }
       result = await this.download(configPath, "", true, onUpdate)
     }
     if(result){
@@ -161,8 +167,16 @@ export class ProfileViewModel{
   async initGeoIp(){
     let geoIp = await readFile(this.context?.resourceDir + "/geoip.metadb")
     writeFile(await this.getHome() + "geoip.metadb", geoIp)
+    let geoip = await readFile(this.context?.resourceDir + "/geoip.dat")
+    writeFile(await this.getHome() + "geoip.dat", geoip)
+
     let geoSite = await readFile(this.context?.resourceDir + "/geosite.dat")
     writeFile(await this.getHome() + "geosite.dat", geoSite)
+    let Country = await readFile(this.context?.resourceDir + "/Country.mmdb")
+    writeFile(await this.getHome() + "Country.mmdb", Country)
+
+    let GeoLite2 = await readFile(this.context?.resourceDir + "/GeoLite2-ASN.mmdb")
+    writeFile(await this.getHome() + "ASN.mmdb", GeoLite2)
     // if(bytes != null){
     //   nativeInstallSideloadGeoip(bytes)
     // }

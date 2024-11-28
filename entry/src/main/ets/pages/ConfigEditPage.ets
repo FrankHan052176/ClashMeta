@@ -133,17 +133,18 @@ export  struct ConfigsPage {
   }
   build() {
     NavDestination() {
-      Column() {
-        ForEach(this.configList, (config: Profile)=>{
-          ConfigItem({profile:config, active: this.activeId == config.uuid, onDelete: ()=>{
-            this.deleteProfile(config.uuid)
-          }, onCheck: async ()=>{
-            this.activeId = config.uuid
-            profileViewModel.activeProfile(config)
-          }})
-        },(item: Profile)=> JSON.stringify(item))
-
-      }.width('100%').height('100%')
+      Scroll(){
+        Column() {
+          ForEach(this.configList, (config: Profile)=>{
+            ConfigItem({profile:config, active: this.activeId == config.uuid, onDelete: ()=>{
+              this.deleteProfile(config.uuid)
+            }, onCheck: async ()=>{
+              this.activeId = config.uuid
+              profileViewModel.activeProfile(config)
+            }})
+          },(item: Profile)=> JSON.stringify(item))
+        }
+      }.align(Alignment.Top).height('100%').width('100%')
     }.title("配置").menus(this.MoreMenu())
   }
 }
@@ -221,17 +222,17 @@ struct ConfigItem {
         }
       })
       Column(){
-        Text(this.profile.name)
+        Text(this.profile.name).textOverflow({overflow: TextOverflow.Ellipsis})
         Blank().height(8)
         Text(this.profile.type  == 1 ? "URL":"File")
-      }.padding(10).alignItems(HorizontalAlign.Start).layoutWeight(1)
+      }.padding(5).alignItems(HorizontalAlign.Start).layoutWeight(1)
       Text(new Date(this.profile.createAt).toLocaleString()).fontSize(12)
       Icon({icon:$r("app.media.ic_baseline_more_vert")}).bindSheet(this.showSheet, this.ConfigOption, {height: 250, dragBar: true, shouldDismiss:()=>{
         this.showSheet = false
       } }).onClick(()=>{
         this.showSheet = true
       })
-    }.padding({left:10 }).margin({left:10, right: 10, top:5, bottom:5}).height(85)
+    }.padding({left:5 }).margin({left:10, right: 10, top:5, bottom:5}).height(85)
     .onClick(()=>{
       if(this.onCheck){
         this.onCheck()
