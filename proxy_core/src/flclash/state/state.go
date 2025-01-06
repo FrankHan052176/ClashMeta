@@ -1,4 +1,4 @@
-//go:build android && cgo
+//go:build (ohos || android) && cgo
 
 package state
 

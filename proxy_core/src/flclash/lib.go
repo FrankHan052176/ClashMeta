@@ -7,14 +7,10 @@ package main
 */
 import "C"
 import (
-	bridge "core/dart-bridge"
 	"unsafe"
 )
 
-//export initNativeApiBridge
-func initNativeApiBridge(api unsafe.Pointer) {
-	bridge.InitDartApi(api)
-}
+
 
 //export initMessage
 func initMessage(port C.longlong) {

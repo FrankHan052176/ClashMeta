@@ -43,4 +43,4 @@ else
 fi
 
 # 复制生成的 .so 文件到指定目录
-cp -f "$outputFile" "$PWD/../../../libs/$outdir/$outputFile"
+cp -f "$outputFile" "$PWD/../../libs/$outdir/$outputFile"
