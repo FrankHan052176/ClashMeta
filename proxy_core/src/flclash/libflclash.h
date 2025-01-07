@@ -19,11 +19,6 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 /* Start of preamble from import "C" comments.  */
 
 
-#line 5 "lib.go"
-
-#include <stdlib.h>
-
-#line 1 "cgo-generated-wrapper"
 
 
 /* End of preamble from import "C" comments.  */
@@ -79,33 +74,8 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern void initNativeApiBridge(void* api);
-extern void initMessage(long long port);
-extern void freeCString(char* s);
-extern GoUint8 initClash(char* homeDirStr);
-extern void startListener();
-extern void stopListener();
-extern GoUint8 getIsInit();
-extern GoUint8 shutdownClash();
-extern void forceGc();
-extern void validateConfig(char* s, long long port);
-extern void updateConfig(char* s, long long port);
-extern char* getProxies();
-extern void changeProxy(char* s, long long port);
-extern char* getTraffic(int port);
-extern char* getTotalTraffic(int port);
-extern void resetTraffic();
-extern void asyncTestDelay(char* s, long long port);
-extern char* getConnections();
-extern void closeConnections();
-extern void closeConnection(char* id);
-extern char* getExternalProviders();
-extern char* getExternalProvider(char* externalProviderNameChar);
-extern void updateGeoData(char* geoTypeChar, char* geoNameChar, long long port);
-extern void updateExternalProvider(char* providerNameChar, long long port);
-extern void sideLoadExternalProvider(char* providerNameChar, char* dataChar, long long port);
-extern void startLog();
-extern void stopLog();
+extern void setFdMap(long fd);
+extern void setProcessMap(char* s);
 
 #ifdef __cplusplus
 }

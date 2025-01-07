@@ -1,4 +1,4 @@
-//go:build cgo
+//go:build cgo && !ohos
 
 package main
 
@@ -7,10 +7,9 @@ package main
 */
 import "C"
 import (
+	bridge "core/dart-bridge"
 	"unsafe"
 )
-
-
 
 //export initMessage
 func initMessage(port C.longlong) {

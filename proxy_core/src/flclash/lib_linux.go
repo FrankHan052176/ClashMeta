@@ -10,18 +10,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/metacubex/mihomo/component/dialer"
-	"github.com/metacubex/mihomo/component/process"
-	"github.com/metacubex/mihomo/constant"
-	"github.com/metacubex/mihomo/dns"
-	"github.com/metacubex/mihomo/listener/sing_tun"
-	"github.com/metacubex/mihomo/log"
 	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"syscall"
 	"time"
+
+	"github.com/metacubex/mihomo/component/dialer"
+	"github.com/metacubex/mihomo/component/process"
+	"github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/dns"
+	"github.com/metacubex/mihomo/listener/sing_tun"
+	"github.com/metacubex/mihomo/log"
 )
 
 type ProcessMap struct {
@@ -69,10 +70,7 @@ func (cm *FdMap) Load(key int64) bool {
 	return ok
 }
 
-//export startTUN
-func startTUN(fd C.int, port C.longlong) {
-	i := int64(port)
-	ServicePort = i
+func StartTUN(fd int) {
 	if fd == 0 {
 		tunLock.Lock()
 		defer tunLock.Unlock()
@@ -98,16 +96,14 @@ func startTUN(fd C.int, port C.longlong) {
 	}()
 }
 
-//export getRunTime
-func getRunTime() *C.char {
+func GetRunTime() *C.char {
 	if runTime == nil {
 		return C.CString("")
 	}
 	return C.CString(strconv.FormatInt(runTime.UnixMilli(), 10))
 }
 
-//export stopTun
-func stopTun() {
+func StopTun() {
 	removeSocketHook()
 	go func() {
 		tunLock.Lock()
@@ -218,16 +214,14 @@ func setProcessMap(s *C.char) {
 	}()
 }
 
-//export getCurrentProfileName
-func getCurrentProfileName() *C.char {
+func GetCurrentProfileName() string {
 	if state.CurrentState == nil {
-		return C.CString("")
+		return ""
 	}
-	return C.CString(state.CurrentState.CurrentProfileName)
+	return state.CurrentState.CurrentProfileName
 }
 
-//export getAndroidVpnOptions
-func getAndroidVpnOptions() *C.char {
+func GetVpnOptions() string {
 	tunLock.Lock()
 	defer tunLock.Unlock()
 	options := state.AndroidVpnOptions{
@@ -245,13 +239,12 @@ func getAndroidVpnOptions() *C.char {
 	data, err := json.Marshal(options)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return C.CString("")
+		return ""
 	}
-	return C.CString(string(data))
+	return string(data)
 }
 
-//export setState
-func setState(s *C.char) {
+func SetState(s *C.char) {
 	paramsString := C.GoString(s)
 	err := json.Unmarshal([]byte(paramsString), state.CurrentState)
 	if err != nil {
@@ -259,8 +252,7 @@ func setState(s *C.char) {
 	}
 }
 
-//export updateDns
-func updateDns(s *C.char) {
+func UpdateDns(s *C.char) {
 	dnsList := C.GoString(s)
 	go func() {
 		log.Infoln("[DNS] updateDns %s", dnsList)
