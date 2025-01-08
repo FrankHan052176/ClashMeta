@@ -31,11 +31,12 @@ func validateConfig(s *C.char, port C.longlong) {
 
 func updateConfig(env js.Env, this js.Value, args []js.Value) any {
 	paramsString, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
-	//bytes := []byte(paramsString)
+	promise := env.NewPromise()
+	bytes := []byte(paramsString)
 	go func() {
-		//bridge.SendToPort(i, handleUpdateConfig(bytes))
+		promise.Resolve(handleUpdateConfig(bytes))
 	}()
-	return paramsString
+	return promise
 }
 
 func getProxies(env js.Env, this js.Value, args []js.Value) any {
@@ -44,10 +45,11 @@ func getProxies(env js.Env, this js.Value, args []js.Value) any {
 
 func changeProxy(env js.Env, this js.Value, args []js.Value) any {
 	paramsString, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	promise := env.NewPromise()
 	handleChangeProxy(paramsString, func(value string) {
-		//bridge.SendToPort(i, value)
+		promise.Resolve(value)
 	})
-	return nil
+	return promise
 }
 
 func getTraffic(env js.Env, this js.Value, args []js.Value) any {
@@ -67,13 +69,13 @@ func forceGc(env js.Env, this js.Value, args []js.Value) any {
 	handleForceGc()
 	return nil
 }
-
 func asyncTestDelay(env js.Env, this js.Value, args []js.Value) any {
 	paramsString, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	promise := env.NewPromise()
 	handleAsyncTestDelay(paramsString, func(value string) {
-		//bridge.SendToPort(i, value)
+		promise.Resolve(value)
 	})
-	return nil
+	return promise
 }
 func getExternalProviders(env js.Env, this js.Value, args []js.Value) any {
 	return handleGetExternalProviders()
@@ -82,19 +84,56 @@ func getExternalProvider(env js.Env, this js.Value, args []js.Value) any {
 	externalProviderName, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
 	return handleGetExternalProvider(externalProviderName)
 }
-func updateExternalProvider(env js.Env, this js.Value, args []js.Value) {
-	providerName, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
-	handleUpdateExternalProvider(providerName, func(value string) {
-		//bridge.SendToPort(i, value)
+func updateGeoData(env js.Env, this js.Value, args []js.Value) any {
+	geoType, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	geoName, _ := napi.GetValueStringUtf8(env.Env, args[1].Value)
+	promise := env.NewPromise()
+	handleUpdateGeoData(geoType, geoName, func(value string) {
+		promise.Resolve(value)
 	})
+	return promise
 }
-func sideLoadExternalProvider(env js.Env, this js.Value, args []js.Value) {
+func updateExternalProvider(env js.Env, this js.Value, args []js.Value) any {
+	providerName, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	promise := env.NewPromise()
+	handleUpdateExternalProvider(providerName, func(value string) {
+		promise.Resolve(value)
+	})
+	return promise
+}
+
+func sideLoadExternalProvider(env js.Env, this js.Value, args []js.Value) any {
 	providerName, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
 	dataChar, _ := napi.GetValueStringUtf8(env.Env, args[1].Value)
 	data := []byte(dataChar)
+	promise := env.NewPromise()
 	handleSideLoadExternalProvider(providerName, data, func(value string) {
-		//bridge.SendToPort(i, value)
+		promise.Resolve(value)
 	})
+	return promise
+}
+func getConnections(env js.Env, this js.Value, args []js.Value) any {
+	return handleGetConnections()
+}
+
+func closeConnections(env js.Env, this js.Value, args []js.Value) any {
+	return handleCloseConnections()
+}
+
+func closeConnection(env js.Env, this js.Value, args []js.Value) any {
+	connectionId, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	return handleCloseConnection(connectionId)
+}
+func startLog(env js.Env, this js.Value, args []js.Value) any {
+	tsfn := env.CreateThreadsafeFunction(args[0], "startLog")
+	handleStartLog(func(value string) {
+		tsfn.Call(env.ValueOf("startLog"), env.ValueOf(value))
+	})
+	return nil
+}
+func stopLog(env js.Env, this js.Value, args []js.Value) any {
+	handleStopLog()
+	return nil
 }
 
 func init() {
@@ -103,11 +142,10 @@ func init() {
 	entry.Export("forceGc", js.AsCallback(forceGc))
 	entry.Export("getTraffic", js.AsCallback(getTraffic))
 	entry.Export("getTotalTraffic", js.AsCallback(getTotalTraffic))
-	// entry.Export("resetTraffic", js.AsCallback(OnEvent))
-	// entry.Export("asyncTestDelay", js.AsCallback(GetPeers))
-	// entry.Export("getConnections", js.AsCallback(GetNodeStatus))
-	// entry.Export("GetNetworkConfigs", js.AsCallback(GetNetworkConfigs))
-	// entry.Export("TestPromise", js.AsCallback(GetPromiseResolve))
+	entry.Export("resetTraffic", js.AsCallback(resetTraffic))
+	entry.Export("asyncTestDelay", js.AsCallback(asyncTestDelay))
+	entry.Export("getConnections", js.AsCallback(getConnections))
+	entry.Export("updateExternalProvider", js.AsCallback(updateExternalProvider))
 }
 func main() {
 }

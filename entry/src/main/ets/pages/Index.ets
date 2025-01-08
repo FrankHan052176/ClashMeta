@@ -17,6 +17,8 @@ import { JSON } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 import BackgroundService from '../utils/BackgroundService';
 
+import { MainPage} from 'proxy_core'
+
 @Builder
 function PageRouter(name: string, params:string) {
   if (name === "proxys") {

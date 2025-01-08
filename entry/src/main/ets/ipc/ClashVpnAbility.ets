@@ -10,7 +10,7 @@ export default class ClashVpnAbility extends VpnExtensionAbility {
   constructor() {
     super();
   }
-  async  onCreate(want: Want) {
+  async onCreate(want: Want) {
     try {
       await this.clashStubService.onConnect(this.context)
     } catch (e) {

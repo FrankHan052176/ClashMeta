@@ -378,7 +378,7 @@ func handleSideLoadExternalProvider(providerName string, data []byte, fn func(va
 	}()
 }
 
-func handleStartLog() {
+func handleStartLog(fn func(value string)) {
 	if logSubscriber != nil {
 		log.UnSubscribe(logSubscriber)
 		logSubscriber = nil
@@ -393,7 +393,8 @@ func handleStartLog() {
 				Type: LogMessage,
 				Data: logData,
 			}
-			SendMessage(*message)
+			logMessage, _ := message.Json()
+			fn(logMessage)
 		}
 	}()
 }
