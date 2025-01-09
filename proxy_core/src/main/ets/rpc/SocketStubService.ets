@@ -4,23 +4,8 @@ import {  util } from '@kit.ArkTS';
 import json from '@ohos.util.json';
 import { ClashRpcType } from './IClashManager';
 import {
-  nativeClearOverride,
-  nativeFetchAndValid,
-  nativeForceGc,
-  nativeHealthCheck,
-  nativeLoad,
-  nativePatchSelector,
-  nativeQueryConfiguration,
-  nativeQueryGroup, nativeQueryGroupNames,
-  nativeQueryProviders,
-  nativeQueryTrafficNow,
-  nativeQueryTrafficTotal, nativeQueryTunnelState,
-  nativeReadOverride,
-  nativeReset,
-  nativeSubscribeLogcat,
-  nativeUpdateProvider,
-  nativeWriteOverride
-} from 'libproxy_core.so';
+    initClash
+} from 'libflclash.so';
 import { common } from '@kit.AbilityKit';
 import { OverrideSlot } from '../models/Common';
 
@@ -39,16 +24,16 @@ export class SocketStubService {
     console.debug("socketService stub request", JSON.stringify(request))
     if(code == ClashRpcType.setLogObserver){
       // 订阅日志，需要持续输出
-      nativeSubscribeLogcat((value: string)=>{
-        this.sendClient(client, value)
-      })
+      // nativeSubscribeLogcat((value: string)=>{
+      //   this.sendClient(client, value)
+      // })
     }  else if(code == ClashRpcType.fetchAndValid){
-      nativeFetchAndValid(params[0] as string, params[1] as string, params[2] as boolean, (type:string, value: string)=>{
-        console.debug("socketService stub result", type)
-        this.sendClient(client, json.stringify({type:type, value: value}))
-        if (type == "fetch_complete")
-            client.close()
-      })
+      // nativeFetchAndValid(params[0] as string, params[1] as string, params[2] as boolean, (type:string, value: string)=>{
+      //   console.debug("socketService stub result", type)
+      //   this.sendClient(client, json.stringify({type:type, value: value}))
+      //   if (type == "fetch_complete")
+      //       client.close()
+      // })
     } else {
       let result = await this.onRemoteMessage(code, params)
       console.debug("socketService stub result", result)
@@ -60,71 +45,71 @@ export class SocketStubService {
     return new Promise(async (resolve, reject) => {
       switch (code){
         case ClashRpcType.queryTunnelState: {
-          resolve(nativeQueryTunnelState())
+          //resolve(nativeQueryTunnelState())
           break;
         }
         case ClashRpcType.queryTrafficTotal:{
-          resolve(nativeQueryTrafficTotal())
+          //resolve(nativeQueryTrafficTotal())
           break;
         }
         case ClashRpcType.queryTrafficNow:{
-          resolve(nativeQueryTrafficNow())
+          //resolve(nativeQueryTrafficNow())
           break;
         }
         case ClashRpcType.queryProxyGroupNames:{
-          resolve(nativeQueryGroupNames(data[0] as boolean))
+          //resolve(nativeQueryGroupNames(data[0] as boolean))
           break;
         }
         case ClashRpcType.queryProxyGroup:{
-          resolve(nativeQueryGroup(data[0] as string, data[1] as string))
+          //resolve(nativeQueryGroup(data[0] as string, data[1] as string))
           break;
         }
         case ClashRpcType.queryProxyGroup:{
-          resolve(nativeQueryGroup(data[0] as string, data[1] as string))
+          //resolve(nativeQueryGroup(data[0] as string, data[1] as string))
           break;
         }
         case ClashRpcType.queryProviders:{
-          resolve(nativeQueryProviders())
+          //resolve(nativeQueryProviders())
           break;
         }
         case ClashRpcType.patchSelector:{
-          resolve(nativePatchSelector(data[0] as string, data[1] as string))
+          //resolve(nativePatchSelector(data[0] as string, data[1] as string))
           break;
         }
         case ClashRpcType.healthCheck:{
-          nativeHealthCheck(data[0] as string,(value: string)=>{
-            resolve(value)
-          })
+          // nativeHealthCheck(data[0] as string,(value: string)=>{
+          //   resolve(value)
+          // })
           break;
         }
         case ClashRpcType.updateProvider:{
-          nativeUpdateProvider(data[0] as string, data[1] as string,()=>{
-            resolve(true)
-          })
+          // nativeUpdateProvider(data[0] as string, data[1] as string,()=>{
+          //   resolve(true)
+          // })
           break;
         }
         case ClashRpcType.queryOverride:{
-          resolve(nativeReadOverride(data[0] as number))
+          //resolve(nativeReadOverride(data[0] as number))
           break;
         }
         case ClashRpcType.patchOverride:{
-          nativeWriteOverride(data[0] as number, data[1] as string)
+          //nativeWriteOverride(data[0] as number, data[1] as string)
           resolve(true)
           break;
         }
         case ClashRpcType.clearOverride:{
-          nativeClearOverride(data[0] as number)
+          //nativeClearOverride(data[0] as number)
           resolve(true)
           break;
         }
         case ClashRpcType.queryConfiguration:{
-          resolve(nativeQueryConfiguration())
+          //resolve(nativeQueryConfiguration())
           break;
         }
         case ClashRpcType.load:{
-          nativeLoad(data[0] as string, (e: Error)=>{
-            resolve(e)
-          })
+          // nativeLoad(data[0] as string, (e: Error)=>{
+          //   resolve(e)
+          // })
           break;
         }
         case ClashRpcType.reset:{
@@ -132,17 +117,9 @@ export class SocketStubService {
           break;
         }
         case ClashRpcType.startClash: {
-          nativeReset()
-          nativeClearOverride(OverrideSlot.Session)
-          this.startVpn().then(()=>{
-            resolve(true)
-          }).catch((e:Error)=>{
-            resolve(e.message)
-          })
           break;
         }
         case ClashRpcType.stopClash:{
-          this.stopVpn()
           resolve(true)
           break;
         }
@@ -152,9 +129,10 @@ export class SocketStubService {
   async sendClient(client: socket.LocalSocketConnection, message: string){
     await client.send({data: message, encoding:"utf-8"})
   }
-  async onConnect(context: common.Context){
+  async startService(context: common.Context){
     try {
-      const socketPath = context.filesDir + '/ipc_socket'
+      initClash(context.filesDir, "1.0.0")
+      const socketPath = context.filesDir + '/flclash.sock'
       await this.server.listen({ address: socketPath})
       this.server.on('connect', (client: socket.LocalSocketConnection) => {
           this.clientPool.set(client.clientId, client);
@@ -168,7 +146,7 @@ export class SocketStubService {
           });
       })
     } catch (e) {
-      console.error("socketService", e.message)
+      console.error("socketService failure", e.message)
     }
   }
   async startVpn(){

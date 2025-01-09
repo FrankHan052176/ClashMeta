@@ -3,13 +3,15 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import profileViewModel from '../entryability/ProfileViewModel';
 import { vpnExtension } from '@kit.NetworkKit';
-import SocketProxyService from '../rpc/SocketProxyService';
+import { SocketStubService} from 'proxy_core'
 import { Dns, OverrideSlot, Sniffer } from './ClashViewModel';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
     this.init()
+    let dd = new SocketStubService()
+    dd.startService(this.context)
   }
   async  init(){
     await profileViewModel.init(this.context)

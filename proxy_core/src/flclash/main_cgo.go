@@ -4,16 +4,28 @@ package main
 
 import "C"
 import (
-	bridge "core/dart-bridge"
+	"core/state"
+	"encoding/json"
+	"strings"
 
 	napi "github.com/likuai2010/ohos-napi"
 	"github.com/likuai2010/ohos-napi/entry"
 	"github.com/likuai2010/ohos-napi/js"
+	"github.com/metacubex/mihomo/dns"
+	"github.com/metacubex/mihomo/log"
 )
+
+func initClash(env js.Env, this js.Value, args []js.Value) any {
+	homeDirStr, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	return handleInitClash(homeDirStr)
+}
 
 func startTun(env js.Env, this js.Value, args []js.Value) any {
 	tunFd, _ := napi.GetValueInt32(env.Env, args[0].Value)
-	StartTUN(int(tunFd))
+	tsfn := env.CreateThreadsafeFunction(args[1], "startTun")
+	StartTUN(int(tunFd), func(fd Fd) {
+		tsfn.Call(env.ValueOf("startTun"), env.ValueOf(fd))
+	})
 	return nil
 }
 func stopTun(env js.Env, this js.Value, args []js.Value) any {
@@ -21,12 +33,14 @@ func stopTun(env js.Env, this js.Value, args []js.Value) any {
 	return nil
 }
 
-func validateConfig(s *C.char, port C.longlong) {
-	i := int64(port)
-	bytes := []byte(C.GoString(s))
+func validateConfig(env js.Env, this js.Value, args []js.Value) any {
+	paramsString, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	bytes := []byte(paramsString)
+	promise := env.NewPromise()
 	go func() {
-		bridge.SendToPort(i, handleValidateConfig(bytes))
+		promise.Resolve(handleValidateConfig(bytes))
 	}()
+	return promise
 }
 
 func updateConfig(env js.Env, this js.Value, args []js.Value) any {
@@ -135,17 +149,72 @@ func stopLog(env js.Env, this js.Value, args []js.Value) any {
 	handleStopLog()
 	return nil
 }
+func updateDns(env js.Env, this js.Value, args []js.Value) any {
+	dnsList, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	promise := env.NewPromise()
+	go func() {
+		log.Infoln("[DNS] updateDns %s", dnsList)
+		dns.UpdateSystemDNS(strings.Split(dnsList, ","))
+		dns.FlushCacheWithDefaultResolver()
+		promise.Resolve(nil)
+	}()
+	return promise
+}
+func setState(env js.Env, this js.Value, args []js.Value) any {
+	paramsString, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	err := json.Unmarshal([]byte(paramsString), state.CurrentState)
+	if err != nil {
+		return nil
+	}
+	return nil
+}
+func setProcessMap(env js.Env, this js.Value, args []js.Value) any {
+	paramsString, _ := napi.GetValueStringUtf8(env.Env, args[0].Value)
+	return SetProcessMap(paramsString)
+}
+
+func getVpnOptions(env js.Env, this js.Value, args []js.Value) any {
+	return GetVpnOptions()
+}
+func getCurrentProfileName(env js.Env, this js.Value, args []js.Value) any {
+	if state.CurrentState == nil {
+		return ""
+	}
+	return state.CurrentState.CurrentProfileName
+}
+func setFdMap(env js.Env, this js.Value, args []js.Value) any {
+	fdInt, _ := napi.GetValueInt32(env.Env, args[0].Value)
+	go func() {
+		fdMap.Store(int64(fdInt))
+	}()
+	return nil
+}
 
 func init() {
+	entry.Export("initClash", js.AsCallback(initClash))
 	entry.Export("startTun", js.AsCallback(startTun))
+	entry.Export("setFdMap", js.AsCallback(setFdMap))
 	entry.Export("stopTun", js.AsCallback(stopTun))
 	entry.Export("forceGc", js.AsCallback(forceGc))
+	entry.Export("validateConfig", js.AsCallback(validateConfig))
+	entry.Export("updateConfig", js.AsCallback(updateConfig))
 	entry.Export("getTraffic", js.AsCallback(getTraffic))
 	entry.Export("getTotalTraffic", js.AsCallback(getTotalTraffic))
 	entry.Export("resetTraffic", js.AsCallback(resetTraffic))
+	entry.Export("getProxies", js.AsCallback(getProxies))
+	entry.Export("changeProxy", js.AsCallback(changeProxy))
 	entry.Export("asyncTestDelay", js.AsCallback(asyncTestDelay))
 	entry.Export("getConnections", js.AsCallback(getConnections))
+	entry.Export("closeConnections", js.AsCallback(closeConnections))
+	entry.Export("closeConnection", js.AsCallback(closeConnection))
 	entry.Export("updateExternalProvider", js.AsCallback(updateExternalProvider))
+	entry.Export("sideLoadExternalProvider", js.AsCallback(updateExternalProvider))
+	entry.Export("getVpnOptions", js.AsCallback(getVpnOptions))
+	entry.Export("getCurrentProfileName", js.AsCallback(getCurrentProfileName))
+	entry.Export("setProcessMap", js.AsCallback(setProcessMap))
+	entry.Export("updateDns", js.AsCallback(updateDns))
+	entry.Export("startLog", js.AsCallback(startLog))
+	entry.Export("stopLog", js.AsCallback(stopLog))
 }
 func main() {
 }

@@ -416,21 +416,21 @@ func init() {
 		} else {
 			delayData.Value = int32(delay)
 		}
-		SendMessage(Message{
-			Type: DelayMessage,
-			Data: delayData,
-		})
+		// SendMessage(Message{
+		// 	Type: DelayMessage,
+		// 	Data: delayData,
+		// })
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {
-		SendMessage(Message{
-			Type: RequestMessage,
-			Data: c,
-		})
+		// SendMessage(Message{
+		// 	Type: RequestMessage,
+		// 	Data: c,
+		// })
 	}
 	executor.DefaultProviderLoadedHook = func(providerName string) {
-		SendMessage(Message{
-			Type: LoadedMessage,
-			Data: providerName,
-		})
+		// SendMessage(Message{
+		// 	Type: LoadedMessage,
+		// 	Data: providerName,
+		// })
 	}
 }

@@ -38,6 +38,7 @@ export enum ClashRpcType{
 }
 
 export interface IClashManager {
+
   queryTunnelState(): Promise<TunnelState>;
   queryProxyGroupNames(excludeNotSelectable: boolean): Promise<string[]>;
   queryProxyGroup(name: string, proxySort: ProxySort): Promise<ProxyGroup>;

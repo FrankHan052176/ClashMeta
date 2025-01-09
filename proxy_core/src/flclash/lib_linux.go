@@ -70,19 +70,19 @@ func (cm *FdMap) Load(key int64) bool {
 	return ok
 }
 
-func StartTUN(fd int) {
+func StartTUN(fd int, markSocket func(Fd)) {
 	if fd == 0 {
 		tunLock.Lock()
 		defer tunLock.Unlock()
 		now := time.Now()
 		runTime = &now
-		SendMessage(Message{
-			Type: StartedMessage,
-			Data: strconv.FormatInt(runTime.UnixMilli(), 10),
-		})
+		// SendMessage(Message{
+		// 	Type: StartedMessage,
+		// 	Data: strconv.FormatInt(runTime.UnixMilli(), 10),
+		// })
 		return
 	}
-	initSocketHook()
+	initSocketHook(markSocket)
 	go func() {
 		tunLock.Lock()
 		defer tunLock.Unlock()
@@ -117,22 +117,14 @@ func StopTun() {
 	}()
 }
 
-//export setFdMap
-func setFdMap(fd C.long) {
+func SetFdMap(fd C.long) {
 	fdInt := int64(fd)
 	go func() {
 		fdMap.Store(fdInt)
 	}()
 }
 
-func markSocket(fd Fd) {
-	SendMessage(Message{
-		Type: ProtectMessage,
-		Data: fd,
-	})
-}
-
-func initSocketHook() {
+func initSocketHook(markSocket func(Fd)) {
 	dialer.DefaultSocketHook = func(network, address string, conn syscall.RawConn) error {
 		if platform.ShouldBlockConnection() {
 			return errBlocked
@@ -176,13 +168,13 @@ func init() {
 
 		timeout := time.After(200 * time.Millisecond)
 
-		SendMessage(Message{
-			Type: ProcessMessage,
-			Data: Process{
-				Id:       id,
-				Metadata: metadata,
-			},
-		})
+		// SendMessage(Message{
+		// 	Type: ProcessMessage,
+		// 	Data: Process{
+		// 		Id:       id,
+		// 		Metadata: metadata,
+		// 	},
+		// })
 
 		for {
 			select {
@@ -199,12 +191,8 @@ func init() {
 	}
 }
 
-//export setProcessMap
-func setProcessMap(s *C.char) {
-	if s == nil {
-		return
-	}
-	paramsString := C.GoString(s)
+func SetProcessMap(s string) string {
+	paramsString := s
 	go func() {
 		var processMapItem = &ProcessMapItem{}
 		err := json.Unmarshal([]byte(paramsString), processMapItem)
@@ -212,6 +200,7 @@ func setProcessMap(s *C.char) {
 			processMap.Store(processMapItem.Id, processMapItem.Value)
 		}
 	}()
+	return ""
 }
 
 func GetCurrentProfileName() string {

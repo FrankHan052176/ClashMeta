@@ -1,37 +1,27 @@
 
+export const initClash: (path: string, version: string) => void;
+export const startTun: (fd: number, callback: (fd: number) => void) => number;
+export const setFdMap: (fd: number) => void;
+export const stopTun: () => void;
+export const forceGc: () => void;
+export const validateConfig: (paramsString:string) => Promise<string>;
+export const updateConfig: (paramsString:string) => Promise<string>;
 
-export const nativeStartTun: (fd: number, callback: (fd: number) => void) => number;
-export const nativeStopTun: () => void;
+export const getProxies: () => string;
+export const changeProxy: () => Promise<string>;
+export const getTraffic: () => string;
+export const getTotalTraffic: () => string;
+export const resetTraffic: () => void;
+export const asyncTestDelay: (paramsString: string) => Promise<string>;
+export const getExternalProviders: () => string;
+export const getExternalProvider: (name: string) => string;
+export const updateExternalProvider: (name: string) =>  Promise<string>;
+export const sideLoadExternalProvider: (name: string, data: string) =>  Promise<string>;
+export const updateGeoData: (type: string, name: string) => Promise<string>;
+export const getConnections: () => Promise<string>;
+export const closeConnections: () => string;
+export const closeConnection: (connectionId: string) => string;
 
+export const startLog: (callback: (message: string) => void) => string;
 
-
-export const nativeFetchAndValid: (path: string, url: string, force: boolean, callback: (type: string, value: string) => void ) => boolean;
-export const nativeHealthCheck: ( name: string, callback: (value: string) => void ) => string;
-export const nativeLoad: (path: string,  callback: (value: string) => void ) => boolean;
-export const nativeSubscribeLogcat: (callback: (value: string) => void ) => string
-export const nativeUpdateProvider: (type: string, name: String, callback: ( value: string) => void ) => void;
-
-
-export const nativeStartHttp: (listenAt: string) => string;
-export const nativeStopHttp: () => void;
-export const nativeQueryGroupNames: (excludeNotSelectable: boolean) => string;
-export const nativeQueryGroup: (name: string, sort: string) => string;
-export const nativeHealthCheckAll: () => void;
-export const nativePatchSelector: (selector: string, name: string) => boolean;
-export const nativeInit: (path: string, version: string) => void;
-export const nativeQueryProviders: () => string;
-export const nativeInstallSideloadGeoip: (bytes: Uint8Array) => void
-export const nativeQueryConfiguration: () => string
-export const nativeCoreVersion: ( ) => string
-export const nativeReset: () => void;
-export const nativeForceGc: () => void;
-export const nativeSuspend: (suspend: Boolean) => void;
-export const nativeQueryTunnelState: () => string;
-export const nativeWriteOverride: (slot: number, content: String) => void;
-export const nativeReadOverride: (slot: number) => string;
-export const nativeClearOverride: (slot: number) => void;
-
-export const nativeQueryTrafficNow: () => number;
-export const nativeQueryTrafficTotal: () => number;
-
-export const nativeNotifyDnsChanged: (dnsList: string) => number;
+export const stopLog: () => void;
