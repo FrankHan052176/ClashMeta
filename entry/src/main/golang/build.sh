@@ -44,6 +44,6 @@ fi
 
 # 复制生成的 .so 文件到指定目录
 cp -f "$outputFile" "$PWD/../../../libs/$outdir/myapp.so"
-
+rm -f "$outputFile" 
 # （可选）复制类型声明文件
 # cp -f "$PWD/dist/index.d.ts" "$PWD/../src/main/cpp/types/hello/index.d.ts"
