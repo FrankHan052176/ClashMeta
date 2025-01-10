@@ -62,7 +62,7 @@ enum LogMessageLevel {
   Unknown = "unknown"
 }
 
-export interface ConfigurationOverride {
+export interface ClashConfig {
   port?: number;
   "socks-port"?: number;
   "redir-port"?: number;

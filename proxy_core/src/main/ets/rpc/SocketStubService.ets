@@ -3,11 +3,11 @@ import { RpcRequest } from './RpcRequest';
 import {  util } from '@kit.ArkTS';
 import json from '@ohos.util.json';
 import { ClashRpcType } from './IClashManager';
-import {
-    initClash
+import { getTraffic, initClash
 } from 'libflclash.so';
 import { common } from '@kit.AbilityKit';
 import { OverrideSlot } from '../models/Common';
+import { ClashVpnService } from './ClashVpnService';
 
 export class SocketStubService {
   server: socket.LocalSocketServer = socket.constructLocalSocketServerInstance();
@@ -131,6 +131,7 @@ export class SocketStubService {
   }
   async startService(context: common.Context){
     try {
+      this.vpnService.init(context)
       initClash(context.filesDir, "1.0.0")
       const socketPath = context.filesDir + '/flclash.sock'
       await this.server.listen({ address: socketPath})
@@ -149,9 +150,12 @@ export class SocketStubService {
       console.error("socketService failure", e.message)
     }
   }
+  vpnService = new ClashVpnService()
   async startVpn(){
+    this.vpnService.StartVpn("")
   }
   stopVpn(){
+    this.vpnService.stopVpn()
   }
 }
 function sleepTime(timeout = 100): Promise<void>{

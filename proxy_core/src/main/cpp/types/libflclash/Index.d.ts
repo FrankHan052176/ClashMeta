@@ -1,11 +1,12 @@
 
 export const initClash: (path: string, version: string) => void;
-export const startTun: (fd: number, callback: (fd: number) => void) => number;
+export const startTun: (fd: number, callback: (id: number, fd: number) => void) => number;
+export const getVpnOptions: ()  => string;
 export const setFdMap: (fd: number) => void;
 export const stopTun: () => void;
 export const forceGc: () => void;
-export const validateConfig: (paramsString:string) => Promise<string>;
-export const updateConfig: (paramsString:string) => Promise<string>;
+export const validateConfig: (paramsString: string) => Promise<string>;
+export const updateConfig: (paramsString: string) => Promise<string>;
 
 export const getProxies: () => string;
 export const changeProxy: () => Promise<string>;

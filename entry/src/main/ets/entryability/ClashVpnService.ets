@@ -38,6 +38,7 @@ class Config {
     this.dnsAddresses = ["172.19.0.2"];
   }
 }
+
 export  class ClashVpnService{
   noVpn: boolean = false // 模拟器开启
   private tunIp: string = '172.19.0.1';
