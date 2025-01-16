@@ -5,26 +5,26 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_ClashForHarmonyOS_q-uxniKdPOBKq7matO9Q3hj0GBqxKq_JGxl27ID_ZBo=.cer",
-          "storePassword": "0000001B23D730E31A06093012D45ABFF8F22382FD541949D3FC16E1E62D4E4447221D3FB891A5C32CADA4",
+          "certpath": "C:\\Users\\FrankHan\\.ohos\\config\\default_ClashMeta_bDc8IcWaMjo3uS_U_igmn25Ut_CAk7l7nHByGNd_7rM=.cer",
+          "storePassword": "0000001BD05DD5F2DD1DEE66390F4DFCB08CCDA698B78B64711E02364D680F59B4AE8BC8BB700686E6FA22",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001B34B31A0E87B38235E97D96600AF1A965B66FA834AE1FED7A28C57F46BDC1E290DEC1522608425F",
-          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_ClashForHarmonyOS_q-uxniKdPOBKq7matO9Q3hj0GBqxKq_JGxl27ID_ZBo=.p7b",
+          "keyPassword": "0000001BE176786FFF3629355B1040B81E3F53540BF000B5D0D977B0C5122011769FCA284C43FADEB924A9",
+          "profile": "C:\\Users\\FrankHan\\.ohos\\config\\default_ClashMeta_bDc8IcWaMjo3uS_U_igmn25Ut_CAk7l7nHByGNd_7rM=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_ClashForHarmonyOS_q-uxniKdPOBKq7matO9Q3hj0GBqxKq_JGxl27ID_ZBo=.p12"
+          "storeFile": "C:\\Users\\FrankHan\\.ohos\\config\\default_ClashMeta_bDc8IcWaMjo3uS_U_igmn25Ut_CAk7l7nHByGNd_7rM=.p12"
         }
       },
       {
         "name": "prod",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "G:/huawei/store/moonlight-prod.cer",
-          "storePassword": "000000185D63C3220F2C0AC705E5081DA763A930CBCB1CF0A6C3102F53CD8F6CB2618E2084892EFC",
-          "keyAlias": "Moonlight",
-          "keyPassword": "0000001856023A4392F20760E23BAA18293A5FB2877C02BA5D93116E7C2D68734CD99AD240C809FE",
-          "profile": "G:/huawei/store/clash testRelease.p7b",
+          "certpath": "C:\\Users\\FrankHan\\.ohos\\config\\prod_ClashMeta_bDc8IcWaMjo3uS_U_igmn25Ut_CAk7l7nHByGNd_7rM=.cer",
+          "storePassword": "0000001BAFC3911415245682F799D694F4A158FFB64C84986EFBB1202C2F236753C2174517E233CD23E865",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BA0BF464A095C06C6A590ED9FFFBE662439D99067E88A81B50433108E8C8D194368FCA6E7DA93CE",
+          "profile": "C:\\Users\\FrankHan\\.ohos\\config\\prod_ClashMeta_bDc8IcWaMjo3uS_U_igmn25Ut_CAk7l7nHByGNd_7rM=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "G:/huawei/store/keystore.p12"
+          "storeFile": "C:\\Users\\FrankHan\\.ohos\\config\\prod_ClashMeta_bDc8IcWaMjo3uS_U_igmn25Ut_CAk7l7nHByGNd_7rM=.p12"
         }
       }
     ],
